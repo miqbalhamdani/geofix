@@ -1,0 +1,61 @@
+<section class="max-w-7xl mx-auto px-6 mb-20 relative">
+  <div class="flex justify-between items-end mb-8">
+    <h2 class="font-h2 text-h2">Geometry Standards Guide</h2>
+    <div class="flex gap-2">
+      <button
+        class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors"
+        onclick="((el) => el && el.scrollBy({ left: -el.offsetWidth, behavior: 'smooth' }))(document.getElementById('guide-slider'));"
+      >
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+      <button
+        class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors"
+        onclick="((el) => el && el.scrollBy({ left: el.offsetWidth, behavior: 'smooth' }))(document.getElementById('guide-slider'));"
+      >
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    </div>
+  </div>
+  <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 scroll-smooth" id="guide-slider">
+    <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0">
+      <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
+        <span class="material-symbols-outlined text-primary">sync</span>
+      </div>
+      <h3 class="font-h3 text-h3 mb-2">CW vs CCW</h3>
+      <p class="font-body-sm text-secondary mb-4">Winding order determines interior direction. Exterior rings should be CCW and hole rings should be CW.</p>
+      <div class="h-24 bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center">
+        <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">Orientation Rule</span>
+      </div>
+    </div>
+    <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0">
+      <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
+        <span class="material-symbols-outlined text-primary">close</span>
+      </div>
+      <h3 class="font-h3 text-h3 mb-2">Self-Intersections</h3>
+      <p class="font-body-sm text-secondary mb-4">Polygon edges must not cross. Intersections produce ambiguous interior/exterior topology.</p>
+      <div class="h-24 bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center">
+        <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">No Crossing Edges</span>
+      </div>
+    </div>
+    <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0">
+      <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
+        <span class="material-symbols-outlined text-primary">link</span>
+      </div>
+      <h3 class="font-h3 text-h3 mb-2">Ring Closure</h3>
+      <p class="font-body-sm text-secondary mb-4">Every linear ring must repeat the first coordinate as the final coordinate.</p>
+      <div class="h-24 bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center">
+        <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">Closed Ring</span>
+      </div>
+    </div>
+    <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0">
+      <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
+        <span class="material-symbols-outlined text-primary">join_inner</span>
+      </div>
+      <h3 class="font-h3 text-h3 mb-2">Polygon Holes</h3>
+      <p class="font-body-sm text-secondary mb-4">Inner rings must be fully contained by their outer ring and follow opposite orientation.</p>
+      <div class="h-24 bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center">
+        <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">Valid Hole</span>
+      </div>
+    </div>
+  </div>
+</section>

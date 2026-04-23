@@ -1,7 +1,3 @@
-Here’s your **GitHub Copilot instruction** version — adapted for **Astro + Tailwind CSS**, structured like a real engineering guideline (not just UI prompt).
-
----
-
 # 🧠 Copilot Instructions — PolygonFix (Astro + Tailwind)
 
 You are a **senior frontend engineer** building a **production-ready single-page web app** called **PolygonFix**.
@@ -140,65 +136,7 @@ MUST follow:
 
 ---
 
-# 6) PAGE LAYOUT (SINGLE PAGE)
-
-## Top Section
-
-* Title: **Polygon Fixer**
-* Subtitle: short explanation
-
----
-
-## Main Section (Grid 2 columns)
-
-### Left
-
-* Polygon input textarea
-* Buttons:
-
-  * "Check Polygon"
-  * "Fix Polygon"
-
-### Right
-
-* Output textarea
-* Copy button
-* Format indicator (GeoJSON / WKT)
-
----
-
-## Map Section
-
-* Full width
-* Show polygon visualization
-* Update after check/fix
-
----
-
-## Issue Panel
-
-* List detected issues
-* Show:
-
-  * Issue name
-  * Status
-  * Description
-
----
-
-## Guide Section
-
-* Educational explanation
-* Include:
-
-  * Orientation
-  * Self-intersection
-  * Not closed polygon
-  * Hole structure
-
----
-
-# 7) MAP REQUIREMENTS
+# 6) MAP REQUIREMENTS
 
 Using Leaflet:
 
@@ -209,7 +147,7 @@ Using Leaflet:
 
 ---
 
-# 8) INTERACTION FLOW (IMPORTANT)
+# 7) INTERACTION FLOW (IMPORTANT)
 
 1. User inputs polygon
 
@@ -225,7 +163,7 @@ Using Leaflet:
 
 ---
 
-# 9) ERROR HANDLING
+# 8) ERROR HANDLING
 
 * Invalid input → show readable error
 * JSON parse failure → handled gracefully
@@ -233,7 +171,7 @@ Using Leaflet:
 
 ---
 
-# 10) PERFORMANCE
+# 9) PERFORMANCE
 
 * No unnecessary re-renders
 * Keep logic in utils (not UI)
@@ -241,7 +179,7 @@ Using Leaflet:
 
 ---
 
-# 11) CODE STYLE
+# 10) CODE STYLE
 
 * Use TypeScript for logic
 * Keep components small and focused
@@ -250,7 +188,7 @@ Using Leaflet:
 
 ---
 
-# 12) NON-GOALS (IMPORTANT)
+# 11) NON-GOALS (IMPORTANT)
 
 * No authentication
 * No backend required (frontend-first)
@@ -259,7 +197,7 @@ Using Leaflet:
 
 ---
 
-# 14) THINKING PRIORITY (MANDATORY)
+# 12) THINKING PRIORITY (MANDATORY)
 
 When generating code, always think in this order:
 

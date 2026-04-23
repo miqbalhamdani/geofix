@@ -1,0 +1,22 @@
+<div class="flex flex-col gap-sm">
+  <div class="flex justify-between items-center">
+    <label class="font-h3 text-h3" for="polygon-input">Input Geometry</label>
+    <span class="text-xs font-mono-label text-secondary bg-surface-container px-2 py-1 rounded">WKT / GEOJSON</span>
+  </div>
+  <div class="bg-white border border-outline rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary transition-all">
+    <textarea
+      id="polygon-input"
+      class="w-full h-80 p-md font-mono-label text-sm border-none focus:ring-0 resize-none bg-transparent"
+      placeholder="PASTE YOUR GEOMETRY STRING HERE... (e.g. POLYGON((0 0, 10 0, 10 10, 0 10, 0 0)))"
+    ></textarea>
+  </div>
+  <div class="flex gap-sm mt-2">
+    <button id="check-btn" class="bg-primary text-on-primary font-body-sm text-body-sm px-6 py-3 rounded-lg micro-shadow hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs">
+      <span class="material-symbols-outlined text-[18px]">verified</span>
+      Check Polygon
+    </button>
+    <button id="clear-input-btn" class="bg-white border border-outline text-on-surface font-body-sm text-body-sm px-6 py-3 rounded-lg hover:bg-surface-container-low active:scale-95 transition-all">
+      Clear Input
+    </button>
+  </div>
+</div>

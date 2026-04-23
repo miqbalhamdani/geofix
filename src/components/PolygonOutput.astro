@@ -1,0 +1,32 @@
+<div class="flex flex-col gap-sm">
+  <div class="flex justify-between items-center">
+    <label class="font-h3 text-h3" for="polygon-output">Repaired Output</label>
+    <div class="flex gap-2 items-center">
+      <span id="validation-badge" class="text-xs font-mono-label text-on-tertiary-fixed-variant bg-tertiary-fixed px-2 py-1 rounded">
+        VALIDATED
+      </span>
+      <span id="output-format" class="text-xs font-mono-label text-secondary bg-surface-container px-2 py-1 rounded">
+        N/A
+      </span>
+    </div>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden h-80 relative">
+    <textarea
+      id="polygon-output"
+      class="w-full h-full p-md font-mono-label text-sm border-none focus:ring-0 resize-none bg-transparent text-secondary"
+      placeholder="Repaired result will appear here..."
+      readonly
+    ></textarea>
+    <div class="absolute bottom-4 right-4 flex gap-2">
+      <button id="copy-btn" class="p-2 bg-white border border-outline rounded hover:bg-surface-container-low transition-colors" aria-label="Copy output">
+        <span class="material-symbols-outlined text-[18px]">content_copy</span>
+      </button>
+    </div>
+  </div>
+  <div class="flex gap-sm mt-2">
+    <button id="fix-btn" class="bg-primary text-on-primary font-body-sm text-body-sm px-6 py-3 rounded-lg micro-shadow hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs">
+      <span class="material-symbols-outlined text-[18px]">build</span>
+      Fix Polygon
+    </button>
+  </div>
+</div>

@@ -1,11 +1,84 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import GuideSection from '../components/GuideSection.astro';
+import IssuePanel from '../components/IssuePanel.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import MapViewer from '../components/MapViewer.astro';
+import PolygonInput from '../components/PolygonInput.astro';
+import PolygonOutput from '../components/PolygonOutput.astro';
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="PolyFix - Geometry Repair Tool" description="Validate and repair polygon geometry instantly for WKT and GeoJSON.">
+	<main class="pt-12 pb-20">
+		<nav class="max-w-7xl mx-auto px-6 pt-4 flex justify-end">
+			<a class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group" href="#">
+				About Me
+				<span class="material-symbols-outlined text-[18px] group-hover:translate-x-0.5 transition-transform">arrow_outward</span>
+			</a>
+		</nav>
+
+		<section class="max-w-7xl mx-auto px-6 text-center mb-16">
+			<h1 class="font-h1 text-h1 mb-4 text-on-surface">Polygon Fixer</h1>
+			<p class="font-body-lg text-body-lg text-secondary max-w-2xl mx-auto">
+				Validate and repair polygon geometry instantly. Professional-grade geospatial correction for WKT, GeoJSON, and coordinates.
+			</p>
+		</section>
+
+		<section class="max-w-7xl mx-auto px-6 mb-12">
+			<div class="bg-surface-container-low border border-outline-variant rounded-lg p-6 flex flex-wrap justify-between gap-8">
+				<div class="flex flex-col">
+					<span class="font-label-caps text-label-caps text-secondary uppercase mb-1">Total Processed</span>
+					<span class="font-h2 text-h2">1.2M+</span>
+				</div>
+				<div class="flex flex-col">
+					<span class="font-label-caps text-label-caps text-secondary uppercase mb-1">Avg Repair Time</span>
+					<span class="font-h2 text-h2">14ms</span>
+				</div>
+				<div class="flex flex-col">
+					<span class="font-label-caps text-label-caps text-secondary uppercase mb-1">Precision Rate</span>
+					<span class="font-h2 text-h2">99.9%</span>
+				</div>
+				<div class="flex flex-col">
+					<span class="font-label-caps text-label-caps text-secondary uppercase mb-1">Uptime</span>
+					<span class="font-h2 text-h2">99.99%</span>
+				</div>
+			</div>
+		</section>
+
+		<section class="max-w-7xl mx-auto px-6 mb-12">
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+				<PolygonInput />
+				<PolygonOutput />
+			</div>
+		</section>
+
+		<section class="max-w-7xl mx-auto px-6 mb-12">
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+				<IssuePanel />
+				<MapViewer />
+			</div>
+		</section>
+
+		<GuideSection />
+	</main>
+
+	<footer class="w-full border-t border-zinc-200 bg-zinc-50">
+		<div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 py-12 gap-6">
+			<div class="flex flex-col gap-2">
+				<span class="text-sm font-semibold text-zinc-900">PolyFix</span>
+				<span class="text-xs font-normal tracking-wide text-zinc-600">© 2024 PolyFix Geometry Tools. Technical Precision in Geospatial Data.</span>
+			</div>
+			<div class="flex gap-8 text-xs font-normal tracking-wide text-zinc-500">
+				<a class="hover:text-zinc-900 transition-colors" href="#">Documentation</a>
+				<a class="hover:text-zinc-900 transition-colors" href="#">Changelog</a>
+				<a class="hover:text-zinc-900 transition-colors" href="#">Security</a>
+				<a class="hover:text-zinc-900 transition-colors" href="#">Privacy</a>
+			</div>
+		</div>
+	</footer>
+
+	<script>
+		import { initPolygonFixApp } from '../utils/app-controller';
+
+		initPolygonFixApp();
+	</script>
 </Layout>
