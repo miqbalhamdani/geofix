@@ -8,7 +8,7 @@ import type {
 } from 'geojson';
 import wellknown from 'wellknown';
 
-export type InputFormat = 'geojson' | 'wkt';
+export type InputFormat = 'geojson' | 'wkt' | 'kml';
 
 export type ParsedPolygonInput = {
   format: InputFormat;

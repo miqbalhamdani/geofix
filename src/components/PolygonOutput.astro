@@ -23,10 +23,22 @@
       </button>
     </div>
   </div>
-  <div class="flex gap-sm mt-2">
+  <div class="flex flex-wrap gap-sm mt-2">
     <button id="fix-btn" class="bg-primary text-on-primary font-body-sm text-body-sm px-6 py-3 rounded-lg micro-shadow hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs">
       <span class="material-symbols-outlined text-[18px]">build</span>
       Fix Polygon
+    </button>
+    <button id="convert-geojson-btn" class="bg-white border border-outline text-on-surface font-body-sm text-body-sm px-4 py-3 rounded-lg hover:bg-surface-container-low active:scale-95 transition-all flex items-center gap-xs">
+      <span class="material-symbols-outlined text-[18px]">data_object</span>
+      To GeoJSON
+    </button>
+    <button id="convert-wkt-btn" class="bg-white border border-outline text-on-surface font-body-sm text-body-sm px-4 py-3 rounded-lg hover:bg-surface-container-low active:scale-95 transition-all flex items-center gap-xs">
+      <span class="material-symbols-outlined text-[18px]">code</span>
+      To WKT
+    </button>
+    <button id="convert-kml-btn" class="bg-white border border-outline text-on-surface font-body-sm text-body-sm px-4 py-3 rounded-lg hover:bg-surface-container-low active:scale-95 transition-all flex items-center gap-xs">
+      <span class="material-symbols-outlined text-[18px]">map</span>
+      To KML
     </button>
   </div>
 </div>

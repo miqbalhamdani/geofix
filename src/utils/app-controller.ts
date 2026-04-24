@@ -16,6 +16,9 @@ export function initPolygonFixApp(): void {
   const checkButton = getElement<HTMLButtonElement>('check-btn');
   const clearButton = getElement<HTMLButtonElement>('clear-input-btn');
   const fixButton = getElement<HTMLButtonElement>('fix-btn');
+  const convertGeoJsonButton = getElement<HTMLButtonElement>('convert-geojson-btn');
+  const convertWktButton = getElement<HTMLButtonElement>('convert-wkt-btn');
+  const convertKmlButton = getElement<HTMLButtonElement>('convert-kml-btn');
   const copyButton = getElement<HTMLButtonElement>('copy-btn');
   const issueList = getElement<HTMLDivElement>('issue-list');
   const validationBadge = getElement<HTMLSpanElement>('validation-badge');
@@ -26,6 +29,7 @@ export function initPolygonFixApp(): void {
 
   let currentFeature: PolygonFeature | null = null;
   let currentFormat: InputFormat | null = null;
+  let hasFixedOutput = false;
 
   const mapInstance = ensureMap();
   zoomInButton.addEventListener('click', () => mapInstance.zoomIn());
@@ -37,6 +41,7 @@ export function initPolygonFixApp(): void {
       const parsed = parsePolygonInput(input.value);
       currentFeature = parsed.feature;
       currentFormat = parsed.format;
+      hasFixedOutput = false;
 
       const validation = validatePolygonFeature(parsed.feature);
       setValidationState(validationBadge, validation.issues);
@@ -62,6 +67,7 @@ export function initPolygonFixApp(): void {
 
       currentFeature = fixed.fixedFeature;
       currentFormat = parsed.format;
+      hasFixedOutput = true;
       setValidationState(validationBadge, validation.issues);
       formatBadge.textContent = parsed.format.toUpperCase();
       output.value = formatPolygonOutput(fixed.fixedFeature, parsed.format);
@@ -83,6 +89,7 @@ export function initPolygonFixApp(): void {
     output.value = '';
     currentFeature = null;
     currentFormat = null;
+    hasFixedOutput = false;
     renderIssues(issueList, []);
     setValidationState(validationBadge, []);
     formatBadge.textContent = 'N/A';
@@ -99,6 +106,44 @@ export function initPolygonFixApp(): void {
     copyButton.classList.add('bg-surface-container');
     setTimeout(() => copyButton.classList.remove('bg-surface-container'), 700);
   });
+
+  convertGeoJsonButton.addEventListener('click', () => {
+    convertTo('geojson');
+  });
+
+  convertWktButton.addEventListener('click', () => {
+    convertTo('wkt');
+  });
+
+  convertKmlButton.addEventListener('click', () => {
+    convertTo('kml');
+  });
+
+  function convertTo(targetFormat: InputFormat): void {
+    hideError(errorBox);
+    try {
+      const source = getConversionSource();
+      output.value = formatPolygonOutput(source.feature, targetFormat);
+      formatBadge.textContent = targetFormat.toUpperCase();
+    } catch (error) {
+      showError(errorBox, error instanceof Error ? error.message : 'Unable to convert polygon.');
+    }
+  }
+
+  function getConversionSource(): { feature: PolygonFeature; format: InputFormat } {
+    if (hasFixedOutput && currentFeature && currentFormat) {
+      return {
+        feature: currentFeature,
+        format: currentFormat
+      };
+    }
+
+    const parsed = parsePolygonInput(input.value);
+    return {
+      feature: parsed.feature,
+      format: parsed.format
+    };
+  }
 }
 
 function ensureMap(): L.Map {
