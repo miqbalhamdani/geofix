@@ -1,3 +1,71 @@
+---
+const guides = [
+  {
+    icon: 'autorenew',
+    title: 'CW vs CCW',
+    description: 'Winding order determines interior direction. Exterior rings should be CCW and hole rings should be CW.',
+    label: 'Orientation Rule',
+    image: '/polygon-issue/cw-ccw.png',
+  },
+  {
+    icon: 'rule',
+    title: 'Not closed polygon',
+    description: 'Linear rings must be closed. The first and last coordinates must be identical to form a valid polygon.',
+    label: 'Closed Ring',
+    image: '/polygon-issue/not-closed.png',
+  },
+  {
+    icon: 'content_copy',
+    title: 'Duplicate points',
+    description: 'Consecutive duplicate coordinates can cause issues in geometry processing and should be removed.',
+    label: 'Duplicate Points',
+    image: '/polygon-issue/duplicate-points.png',
+  },
+  {
+    icon: 'call_split',
+    title: 'Self-Intersections',
+    description: 'Polygon edges must not cross. Intersections produce ambiguous interior/exterior topology.',
+    label: 'No Crossing Edges',
+    image: '/polygon-issue/self-intersections.png',
+  },
+  {
+    icon: 'donut_large',
+    title: 'Hole outside outer ring',
+    description: 'Inner rings must be fully contained by their outer ring.',
+    label: 'Valid Hole',
+    image: '/polygon-issue/hole-outside-outer-ring.png',
+  },
+  {
+    icon: 'filter_3',
+    title: 'Less than 3 unique points',
+    description: 'A valid polygon must have at least 3 unique vertices. Fewer points cannot enclose an area.',
+    label: 'Minimum 3 Unique Points',
+    image: '/polygon-issue/less-than-3-unique-points.png',
+  },
+  {
+    icon: 'crop_3_2',
+    title: 'Zero-area polygon',
+    description: 'Polygons with zero area are invalid.',
+    label: 'Non-zero Area',
+    image: '/polygon-issue/zero-area-polygon.png',
+  },
+  {
+    icon: 'tune',
+    title: 'Extreme precision collapse',
+    description: 'Polygons with extremely high precision can cause computational issues.',
+    label: 'Precision Limit',
+    image: '/polygon-issue/extreme-precision-collapse.png',
+  },
+  {
+    icon: 'hub',
+    title: 'Disconnected shapes (should be MultiPolygon)',
+    description: 'Multiple disconnected shapes should be represented as a MultiPolygon.',
+    label: 'MultiPolygon',
+    image: '/polygon-issue/disconnected-shapes-multipolygon.png',
+  },
+];
+---
+
 <section class="max-w-7xl mx-auto px-6 mb-20 relative">
   <div class="flex justify-between items-end mb-8">
     <h2 class="font-h2 text-h2">Geometry Standards Guide</h2>
@@ -17,45 +85,21 @@
     </div>
   </div>
   <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 scroll-smooth" id="guide-slider">
-    <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0">
-      <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
-        <span class="material-symbols-outlined text-primary">sync</span>
+    {guides.map((guide) => (
+      <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0 flex flex-col">
+        <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
+          <span class="material-symbols-outlined text-primary">{guide.icon}</span>
+        </div>
+        <h3 class="font-h3 text-h3 mb-2">{guide.title}</h3>
+        <p class="font-body-sm text-secondary mb-4">{guide.description}</p>
+        <div class="mt-auto bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center overflow-hidden min-h-[140px]">
+          {guide.image ? (
+            <img src={guide.image} alt={guide.title} class="h-full w-full object-contain" loading="lazy" />
+          ) : (
+            <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">{guide.label}</span>
+          )}
+        </div>
       </div>
-      <h3 class="font-h3 text-h3 mb-2">CW vs CCW</h3>
-      <p class="font-body-sm text-secondary mb-4">Winding order determines interior direction. Exterior rings should be CCW and hole rings should be CW.</p>
-      <div class="h-24 bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center">
-        <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">Orientation Rule</span>
-      </div>
-    </div>
-    <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0">
-      <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
-        <span class="material-symbols-outlined text-primary">close</span>
-      </div>
-      <h3 class="font-h3 text-h3 mb-2">Self-Intersections</h3>
-      <p class="font-body-sm text-secondary mb-4">Polygon edges must not cross. Intersections produce ambiguous interior/exterior topology.</p>
-      <div class="h-24 bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center">
-        <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">No Crossing Edges</span>
-      </div>
-    </div>
-    <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0">
-      <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
-        <span class="material-symbols-outlined text-primary">link</span>
-      </div>
-      <h3 class="font-h3 text-h3 mb-2">Ring Closure</h3>
-      <p class="font-body-sm text-secondary mb-4">Every linear ring must repeat the first coordinate as the final coordinate.</p>
-      <div class="h-24 bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center">
-        <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">Closed Ring</span>
-      </div>
-    </div>
-    <div class="w-[calc((100%-48px)/3)] min-w-[300px] snap-start bg-white border border-outline-variant rounded-lg p-6 hover:border-primary transition-colors flex-shrink-0">
-      <div class="w-12 h-12 bg-surface-container-low flex items-center justify-center rounded-lg mb-4">
-        <span class="material-symbols-outlined text-primary">join_inner</span>
-      </div>
-      <h3 class="font-h3 text-h3 mb-2">Polygon Holes</h3>
-      <p class="font-body-sm text-secondary mb-4">Inner rings must be fully contained by their outer ring and follow opposite orientation.</p>
-      <div class="h-24 bg-surface-container-low rounded border border-dashed border-outline-variant flex items-center justify-center">
-        <span class="text-[10px] font-mono-label text-outline uppercase tracking-widest">Valid Hole</span>
-      </div>
-    </div>
+    ))}
   </div>
 </section>
