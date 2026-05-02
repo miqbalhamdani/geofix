@@ -9,7 +9,11 @@ import PolygonOutput from '../components/PolygonOutput.astro';
 
 <Layout title="PolyFix - Geometry Repair Tool" description="Validate and repair polygon geometry instantly for WKT and GeoJSON.">
 	<main class="pt-12 pb-20">
-		<nav class="max-w-7xl mx-auto px-6 pt-4 flex justify-end">
+		<nav class="max-w-7xl mx-auto px-6 pt-4 flex justify-end gap-4">
+			<button id="tour-btn" class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group">
+				<span class="material-symbols-outlined text-[18px]">tour</span>
+				Take a Tour
+			</button>
 			<a class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group" href="https://www.iqbalhamdani.com/" target="_blank" rel="noopener noreferrer">
 				About Me
 				<span class="material-symbols-outlined text-[18px] group-hover:translate-x-0.5 transition-transform">arrow_outward</span>
@@ -46,13 +50,13 @@ import PolygonOutput from '../components/PolygonOutput.astro';
 
 		<section class="max-w-7xl mx-auto px-6 mb-12">
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
-				<PolygonInput />
-				<PolygonOutput />
+				<div id="input-section"><PolygonInput /></div>
+				<div id="output-section"><PolygonOutput /></div>
 			</div>
 		</section>
 
 		<section class="max-w-7xl mx-auto px-6 mb-12">
-			<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+			<div id="validate-map-row" class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
 				<IssuePanel />
 				<MapViewer />
 			</div>
@@ -78,7 +82,10 @@ import PolygonOutput from '../components/PolygonOutput.astro';
 
 	<script>
 		import { initPolygonFixApp } from '../utils/app-controller';
+		import { startTour } from '../utils/tour';
 
 		initPolygonFixApp();
+
+		document.getElementById('tour-btn')?.addEventListener('click', () => startTour());
 	</script>
 </Layout>
