@@ -1,0 +1,154 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="PolyFix - Polygon Overlap Checker"
+  description="Check whether two polygons overlap using WKT or GeoJSON inputs."
+>
+  <main class="pt-12 pb-20">
+    <nav class="max-w-7xl mx-auto px-6 pt-4 flex justify-end gap-4">
+      <a class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group" href="/">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Polygon Fixer
+      </a>
+      <a class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group" href="https://www.iqbalhamdani.com/" target="_blank" rel="noopener noreferrer">
+        About Me
+        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-0.5 transition-transform">arrow_outward</span>
+      </a>
+    </nav>
+
+    <section class="max-w-7xl mx-auto px-6 text-center mb-12">
+      <h1 class="font-h1 text-h1 mb-4 text-on-surface">Polygon Overlap Checker</h1>
+      <p class="font-body-lg text-body-lg text-secondary max-w-2xl mx-auto">
+        Validate two polygons and detect whether they share interior area. Supports WKT and GeoJSON in each input.
+      </p>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 mb-10">
+      <div class="bg-surface-container-low border border-outline-variant rounded-lg p-6 flex flex-wrap justify-between gap-8">
+        <div class="flex flex-col">
+          <span class="font-label-caps text-label-caps text-secondary uppercase mb-1">Overlap Rule</span>
+          <span class="font-h3 text-h3">Shared Interior Area</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-label-caps text-label-caps text-secondary uppercase mb-1">Touching Edges</span>
+          <span class="font-h3 text-h3">Not Overlap</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-label-caps text-label-caps text-secondary uppercase mb-1">Input Flexibility</span>
+          <span class="font-h3 text-h3">Mixed Formats</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 mb-12">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+        <div class="flex flex-col gap-sm">
+          <div class="flex justify-between items-center">
+            <label class="font-h3 text-h3" for="polygon-a-input">Polygon A</label>
+            <span id="format-a-badge" class="text-xs font-mono-label text-secondary bg-surface-container px-2 py-1 rounded">N/A</span>
+          </div>
+          <div class="bg-white border border-outline rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary transition-all">
+            <textarea
+              id="polygon-a-input"
+              class="w-full h-80 p-md font-mono-label text-sm border-none focus:ring-0 resize-none bg-transparent"
+              placeholder="Polygon A (WKT or GeoJSON)"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-sm">
+          <div class="flex justify-between items-center">
+            <label class="font-h3 text-h3" for="polygon-b-input">Polygon B</label>
+            <span id="format-b-badge" class="text-xs font-mono-label text-secondary bg-surface-container px-2 py-1 rounded">N/A</span>
+          </div>
+          <div class="bg-white border border-outline rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary transition-all">
+            <textarea
+              id="polygon-b-input"
+              class="w-full h-80 p-md font-mono-label text-sm border-none focus:ring-0 resize-none bg-transparent"
+              placeholder="Polygon B (WKT or GeoJSON)"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-sm justify-center">
+        <button id="check-overlap-btn" class="bg-primary text-on-primary font-body-sm text-body-sm px-6 py-3 rounded-lg micro-shadow hover:opacity-90 active:scale-95 transition-all flex items-center gap-xs">
+          <span class="material-symbols-outlined text-[18px]">join_inner</span>
+          Check Overlap
+        </button>
+        <button id="clear-overlap-btn" class="bg-white border border-outline text-on-surface font-body-sm text-body-sm px-6 py-3 rounded-lg hover:bg-surface-container-low active:scale-95 transition-all">
+          Clear Inputs
+        </button>
+      </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 mb-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter min-h-[520px]">
+        <div class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden min-h-[420px] relative">
+          <div id="overlap-map" class="absolute inset-0"></div>
+          <div class="absolute top-4 right-4 flex flex-col gap-2 z-[1000]">
+            <button id="overlap-zoom-in-btn" class="bg-white p-2 border border-outline-variant rounded shadow-sm hover:bg-surface-container transition-colors" aria-label="Zoom in">
+              <span class="material-symbols-outlined">zoom_in</span>
+            </button>
+            <button id="overlap-zoom-out-btn" class="bg-white p-2 border border-outline-variant rounded shadow-sm hover:bg-surface-container transition-colors" aria-label="Zoom out">
+              <span class="material-symbols-outlined">zoom_out</span>
+            </button>
+          </div>
+          <div class="absolute bottom-4 left-4 z-[1000] bg-white px-3 py-1 border border-outline-variant rounded-full text-[10px] font-mono-label">
+            EPSG:4326 | ZOOM AUTO
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 flex flex-col gap-gutter">
+          <div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col gap-md h-full">
+            <h3 class="font-h3 text-h3 text-primary flex items-center gap-xs">
+              <span class="material-symbols-outlined">info</span>
+              Spatial Relationship
+            </h3>
+
+            <div id="global-error-overlap" class="hidden p-3 rounded-lg border border-error/20 bg-error-container text-on-error-container text-sm"></div>
+
+            <div class="space-y-sm">
+              <div class="flex justify-between items-center py-xs border-b border-outline-variant">
+                <span class="text-secondary">Overlap Detected</span>
+                <span id="overlap-detected-wrapper" class="font-bold text-secondary flex items-center gap-xs">
+                  <span id="overlap-detected-value">N/A</span>
+                  <span id="overlap-detected-icon" class="material-symbols-outlined text-[16px]">help</span>
+                </span>
+              </div>
+              <div class="flex justify-between items-center py-xs border-b border-outline-variant">
+                <span class="text-secondary">Overlap Area</span>
+                <span id="overlap-area-value" class="font-mono-label">0.00 m2</span>
+              </div>
+              <div class="flex justify-between items-center py-xs">
+                <span class="text-secondary">Percentage Overlap</span>
+                <span id="overlap-percentage-value" class="font-mono-label">0.00%</span>
+              </div>
+            </div>
+
+            <div class="mt-sm">
+              <label class="font-label-caps text-label-caps text-on-surface-variant block mb-xs">INTERSECTION COORDINATES</label>
+              <div id="intersection-coordinates" class="bg-surface-container-low rounded p-sm font-mono-label text-[12px] text-secondary leading-relaxed h-32 overflow-auto">
+                No intersection coordinates.
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-surface-container-low border border-outline-variant border-dashed rounded-xl p-md">
+            <p class="text-secondary text-[13px] italic">
+              Analysis performed using Turf.js spatial engine. Measurements are computed in EPSG:4326 context.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    import { initPolygonOverlapApp } from '../features/overlap/app-controller';
+
+    initPolygonOverlapApp();
+  </script>
+</Layout>

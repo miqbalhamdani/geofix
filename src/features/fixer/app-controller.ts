@@ -1,9 +1,9 @@
 import type { Feature, GeoJsonProperties, MultiPolygon, Polygon } from 'geojson';
 import L from 'leaflet';
-import { formatPolygonOutput } from './formatter';
-import { fixPolygonFeature } from './fixer';
-import { parsePolygonInput, type InputFormat } from './parser';
-import { type ValidationIssue, validatePolygonFeature } from './validator';
+import { formatPolygonOutput } from '../../shared/geometry/formatter';
+import { fixPolygonFeature } from '../../shared/geometry/fixer';
+import { parsePolygonInput, type InputFormat } from '../../shared/geometry/parser';
+import { type ValidationIssue, validatePolygonFeature } from '../../shared/geometry/validator';
 
 type PolygonFeature = Feature<Polygon | MultiPolygon, GeoJsonProperties>;
 

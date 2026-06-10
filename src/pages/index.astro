@@ -14,6 +14,10 @@ import PolygonOutput from '../components/PolygonOutput.astro';
 				<span class="material-symbols-outlined text-[18px]">tour</span>
 				Take a Tour
 			</button>
+			<a class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group" href="/check-overlap">
+				<span class="material-symbols-outlined text-[18px]">join_inner</span>
+				Check Overlap
+			</a>
 			<a class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group" href="https://www.iqbalhamdani.com/" target="_blank" rel="noopener noreferrer">
 				About Me
 				<span class="material-symbols-outlined text-[18px] group-hover:translate-x-0.5 transition-transform">arrow_outward</span>
@@ -65,24 +69,9 @@ import PolygonOutput from '../components/PolygonOutput.astro';
 		<GuideSection />
 	</main>
 
-	<footer class="w-full border-t border-zinc-200 bg-zinc-50">
-		<div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 py-12 gap-6">
-			<div class="flex flex-col gap-2">
-				<span class="text-sm font-semibold text-zinc-900">PolyFix</span>
-				<span class="text-xs font-normal tracking-wide text-zinc-600">© 2024 PolyFix Geometry Tools. Technical Precision in Geospatial Data.</span>
-			</div>
-			<div class="flex gap-8 text-xs font-normal tracking-wide text-zinc-500">
-				<a class="hover:text-zinc-900 transition-colors" href="#">Documentation</a>
-				<a class="hover:text-zinc-900 transition-colors" href="#">Changelog</a>
-				<a class="hover:text-zinc-900 transition-colors" href="#">Security</a>
-				<a class="hover:text-zinc-900 transition-colors" href="#">Privacy</a>
-			</div>
-		</div>
-	</footer>
-
 	<script>
-		import { initPolygonFixApp } from '../utils/app-controller';
-		import { startTour } from '../utils/tour';
+		import { initPolygonFixApp } from '../features/fixer/app-controller';
+		import { startTour } from '../shared/tour/tour';
 
 		initPolygonFixApp();
 
