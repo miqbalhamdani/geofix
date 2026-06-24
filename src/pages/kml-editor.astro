@@ -1,0 +1,127 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="PolyFix - KML Polygon Editor"
+  description="Upload a KML file, edit its attributes and polygon geometry, then download valid KML."
+>
+  <main class="pt-12 pb-20">
+    <nav class="max-w-7xl mx-auto px-6 pt-4 flex justify-end gap-4">
+      <a class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group" href="/">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Polygon Fixer
+      </a>
+      <a class="text-body-sm font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1 group" href="https://www.iqbalhamdani.com/" target="_blank" rel="noopener noreferrer">
+        About Me
+        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-0.5 transition-transform">arrow_outward</span>
+      </a>
+    </nav>
+
+    <section class="max-w-7xl mx-auto px-6 text-center mb-12">
+      <h1 class="font-h1 text-h1 mb-4 text-on-surface">KML Polygon Editor</h1>
+      <p class="font-body-lg text-body-lg text-secondary max-w-2xl mx-auto">
+        Upload a KML file to edit its attributes and polygon vertices on an interactive map, then export valid KML.
+      </p>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 mb-12">
+      <div class="flex flex-col md:flex-row border border-outline-variant rounded-lg overflow-hidden bg-surface-container-low">
+        <!-- Left Panel: Sidebar -->
+        <aside class="w-full md:w-[400px] border-b md:border-b-0 md:border-r border-outline-variant flex flex-col">
+          <div class="p-margin flex flex-col gap-lg">
+            <!-- Upload Area -->
+            <section>
+              <h3 class="font-h3 text-h3 mb-sm">Upload File</h3>
+              <div
+                id="kml-dropzone"
+                class="border-2 border-dashed border-outline rounded-lg p-lg text-center cursor-pointer hover:bg-surface-variant transition-colors group"
+              >
+                <span class="material-symbols-outlined text-4xl text-outline mb-xs group-hover:text-primary transition-colors">upload_file</span>
+                <p class="font-body-sm text-on-surface-variant">Drag and drop a KML file here or <span class="text-primary font-semibold underline">browse</span></p>
+                <p id="kml-file-name" class="mt-xs font-mono-label text-[12px] text-secondary"></p>
+              </div>
+              <input id="kml-file-input" type="file" accept=".kml" class="hidden" />
+              <div id="kml-error" class="hidden mt-sm text-xs text-on-error-container bg-error-container rounded-lg px-sm py-xs"></div>
+            </section>
+
+            <!-- Placemark Selector (hidden until >1 placemark) -->
+            <div id="placemark-selector-row" class="hidden flex flex-col gap-xs">
+              <label class="font-label-caps text-secondary" for="placemark-select">Placemark</label>
+              <select
+                id="placemark-select"
+                class="bg-surface border border-outline-variant rounded-lg px-sm py-xs font-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+              ></select>
+            </div>
+
+            <!-- Dynamic Attributes -->
+            <section>
+              <div class="flex items-center justify-between mb-sm">
+                <h3 class="font-h3 text-h3">Attributes</h3>
+                <span class="bg-surface-container text-secondary text-[10px] px-xs py-[2px] rounded uppercase tracking-widest font-bold">Metadata</span>
+              </div>
+              <div id="kml-empty-state" class="flex items-start gap-sm p-3 bg-surface-container rounded-lg">
+                <span class="material-symbols-outlined text-secondary">info</span>
+                <div>
+                  <p class="font-body-sm text-on-surface font-semibold">No file loaded</p>
+                  <p class="text-xs text-secondary">Upload a KML file to extract its editable attributes.</p>
+                </div>
+              </div>
+              <div id="kml-attributes" class="flex flex-col gap-md"></div>
+            </section>
+          </div>
+
+          <!-- Panel Actions -->
+          <div class="mt-auto p-margin border-t border-outline-variant bg-surface-container flex flex-col gap-sm">
+            <button id="kml-update-btn" disabled class="w-full bg-primary text-on-primary py-sm rounded-lg font-h3 hover:opacity-90 transition-all flex items-center justify-center gap-xs disabled:opacity-40 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined">sync</span>
+              Update Data
+            </button>
+            <button id="kml-download-btn" disabled class="w-full bg-surface-container-lowest text-primary border border-outline py-sm rounded-lg font-h3 hover:bg-surface-variant transition-all flex items-center justify-center gap-xs disabled:opacity-40 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined">download</span>
+              Download KML
+            </button>
+          </div>
+        </aside>
+
+        <!-- Main Content: Map Interaction -->
+        <section class="flex-grow relative min-h-[520px]">
+          <div id="kml-map" class="absolute inset-0"></div>
+
+          <!-- Floating Map Controls -->
+          <div class="absolute top-margin right-margin flex flex-col gap-xs z-[1000]">
+            <div class="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm flex flex-col overflow-hidden">
+              <button id="kml-zoom-in-btn" class="p-sm hover:bg-surface-variant transition-colors border-b border-outline-variant" aria-label="Zoom in">
+                <span class="material-symbols-outlined text-on-surface">add</span>
+              </button>
+              <button id="kml-zoom-out-btn" class="p-sm hover:bg-surface-variant transition-colors" aria-label="Zoom out">
+                <span class="material-symbols-outlined text-on-surface">remove</span>
+              </button>
+            </div>
+            <button id="kml-recenter-btn" class="bg-surface-container-lowest p-sm rounded-lg border border-outline-variant shadow-sm hover:bg-surface-variant transition-colors" aria-label="Recenter on polygon">
+              <span class="material-symbols-outlined text-on-surface">my_location</span>
+            </button>
+          </div>
+
+          <!-- Bottom Information Bar (Overlay) -->
+          <div class="absolute bottom-margin left-margin flex flex-wrap gap-md z-[1000]">
+            <div class="bg-primary text-on-primary px-md py-xs rounded-full flex items-center gap-xs shadow-lg">
+              <span class="material-symbols-outlined text-sm">square_foot</span>
+              <span class="font-mono-label text-[12px] uppercase">Area: <span id="kml-area">—</span></span>
+            </div>
+            <div class="bg-surface-container-lowest border border-outline-variant px-md py-xs rounded-full flex items-center gap-xs shadow-lg">
+              <span class="material-symbols-outlined text-sm text-secondary">straighten</span>
+              <span class="font-mono-label text-[12px] text-on-surface-variant uppercase">Perimeter: <span id="kml-perimeter">—</span></span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    import { initKmlEditorApp } from '../features/kml-editor/app-controller';
+
+    initKmlEditorApp();
+  </script>
+</Layout>
