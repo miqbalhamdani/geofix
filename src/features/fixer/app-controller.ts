@@ -1,14 +1,13 @@
-import type { Feature, GeoJsonProperties, MultiPolygon, Polygon } from 'geojson';
 import L from 'leaflet';
-import { formatPolygonOutput } from '../../shared/geometry/formatter';
-import { fixPolygonFeature } from '../../shared/geometry/fixer';
-import { parsePolygonInput, type InputFormat } from '../../shared/geometry/parser';
-import { type ValidationIssue, validatePolygonFeature } from '../../shared/geometry/validator';
-
-type PolygonFeature = Feature<Polygon | MultiPolygon, GeoJsonProperties>;
+import { formatGeoOutput } from '../../shared/geometry/formatter';
+import { fixGeoCollection } from '../../shared/geometry/fixer';
+import { parseGeoInput } from '../../shared/geometry/parser';
+import { MAX_FILE_BYTES } from '../../shared/geometry/eudr';
+import type { InputFormat, ParsedGeoInput } from '../../shared/geometry/types';
+import { type ValidationIssue, validateGeoCollection } from '../../shared/geometry/validator';
 
 let map: L.Map | null = null;
-let polygonLayer: L.GeoJSON | null = null;
+let geometryLayer: L.GeoJSON | null = null;
 
 export function initPolygonFixApp(): void {
   const input = getElement<HTMLTextAreaElement>('polygon-input');
@@ -27,8 +26,7 @@ export function initPolygonFixApp(): void {
   const zoomInButton = getElement<HTMLButtonElement>('zoom-in-btn');
   const zoomOutButton = getElement<HTMLButtonElement>('zoom-out-btn');
 
-  let currentFeature: PolygonFeature | null = null;
-  let currentFormat: InputFormat | null = null;
+  let currentParsed: ParsedGeoInput | null = null;
   let hasFixedOutput = false;
 
   const mapInstance = ensureMap();
@@ -38,17 +36,22 @@ export function initPolygonFixApp(): void {
   checkButton.addEventListener('click', () => {
     hideError(errorBox);
     try {
-      const parsed = parsePolygonInput(input.value);
-      currentFeature = parsed.feature;
-      currentFormat = parsed.format;
+      const parsed = parseGeoInput(input.value);
+      currentParsed = parsed;
       hasFixedOutput = false;
 
-      const validation = validatePolygonFeature(parsed.feature);
-      setValidationState(validationBadge, validation.issues);
+      const validation = validateGeoCollection(parsed.collection);
+      const issues = [
+        ...checkInputSize(input.value),
+        ...parseNotesToIssues(parsed.parseNotes),
+        ...validation.issues
+      ];
+
+      setValidationState(validationBadge, issues);
       formatBadge.textContent = parsed.format.toUpperCase();
-      output.value = formatPolygonOutput(parsed.feature, parsed.format);
-      renderIssues(issueList, validation.issues);
-      renderOnMap(parsed.feature);
+      output.value = formatGeoOutput(parsed.collection, parsed.inputShape, parsed.format);
+      renderIssues(issueList, issues);
+      renderOnMap(parsed);
     } catch (error) {
       showError(errorBox, error instanceof Error ? error.message : 'Failed to parse input geometry.');
       renderIssues(issueList, []);
@@ -61,34 +64,34 @@ export function initPolygonFixApp(): void {
   fixButton.addEventListener('click', () => {
     hideError(errorBox);
     try {
-      const parsed = currentFeature && currentFormat ? { feature: currentFeature, format: currentFormat } : parsePolygonInput(input.value);
-      const fixed = fixPolygonFeature(parsed.feature);
-      const validation = validatePolygonFeature(fixed.fixedFeature);
+      const parsed = currentParsed ?? parseGeoInput(input.value);
+      const fixed = fixGeoCollection(parsed.collection);
+      const fixedParsed: ParsedGeoInput = { ...parsed, collection: fixed.fixedCollection };
+      const validation = validateGeoCollection(fixed.fixedCollection);
 
-      currentFeature = fixed.fixedFeature;
-      currentFormat = parsed.format;
+      currentParsed = fixedParsed;
       hasFixedOutput = true;
-      setValidationState(validationBadge, validation.issues);
       formatBadge.textContent = parsed.format.toUpperCase();
-      output.value = formatPolygonOutput(fixed.fixedFeature, parsed.format);
+      output.value = formatGeoOutput(fixed.fixedCollection, parsed.inputShape, parsed.format);
 
       const fixNotes = fixed.notes.map((note) => ({
         type: 'fix',
         status: 'info' as const,
         message: note
       }));
-      renderIssues(issueList, [...validation.issues, ...fixNotes]);
-      renderOnMap(fixed.fixedFeature);
+      const issues = [...parseNotesToIssues(parsed.parseNotes), ...validation.issues];
+      setValidationState(validationBadge, issues);
+      renderIssues(issueList, [...issues, ...fixNotes]);
+      renderOnMap(fixedParsed);
     } catch (error) {
-      showError(errorBox, error instanceof Error ? error.message : 'Unable to fix polygon.');
+      showError(errorBox, error instanceof Error ? error.message : 'Unable to fix geometry.');
     }
   });
 
   clearButton.addEventListener('click', () => {
     input.value = '';
     output.value = '';
-    currentFeature = null;
-    currentFormat = null;
+    currentParsed = null;
     hasFixedOutput = false;
     renderIssues(issueList, []);
     setValidationState(validationBadge, []);
@@ -123,27 +126,50 @@ export function initPolygonFixApp(): void {
     hideError(errorBox);
     try {
       const source = getConversionSource();
-      output.value = formatPolygonOutput(source.feature, targetFormat);
+      output.value = formatGeoOutput(source.collection, source.inputShape, targetFormat);
       formatBadge.textContent = targetFormat.toUpperCase();
+
+      const hasProperties = source.collection.features.some(
+        (feature) => Object.keys(feature.properties ?? {}).length > 0
+      );
+      if (targetFormat === 'wkt' && hasProperties) {
+        showError(errorBox, 'Note: WKT cannot carry feature properties (ProducerName, Area, ...) — they were omitted from the output.');
+      }
     } catch (error) {
-      showError(errorBox, error instanceof Error ? error.message : 'Unable to convert polygon.');
+      showError(errorBox, error instanceof Error ? error.message : 'Unable to convert geometry.');
     }
   }
 
-  function getConversionSource(): { feature: PolygonFeature; format: InputFormat } {
-    if (hasFixedOutput && currentFeature && currentFormat) {
-      return {
-        feature: currentFeature,
-        format: currentFormat
-      };
+  function getConversionSource(): ParsedGeoInput {
+    if (hasFixedOutput && currentParsed) {
+      return currentParsed;
     }
 
-    const parsed = parsePolygonInput(input.value);
-    return {
-      feature: parsed.feature,
-      format: parsed.format
-    };
+    return parseGeoInput(input.value);
   }
+}
+
+function checkInputSize(rawText: string): ValidationIssue[] {
+  if (new Blob([rawText]).size <= MAX_FILE_BYTES) {
+    return [];
+  }
+
+  return [
+    {
+      type: 'file_size',
+      status: 'error',
+      eudrErrorCode: 16,
+      message: 'Input exceeds the 25 MB EUDR file size limit. Simplify polygons or split the submission into separate DDS files.'
+    }
+  ];
+}
+
+function parseNotesToIssues(parseNotes: string[]): ValidationIssue[] {
+  return parseNotes.map((note) => ({
+    type: 'parse_note',
+    status: 'warning' as const,
+    message: note
+  }));
 }
 
 function ensureMap(): L.Map {
@@ -163,33 +189,41 @@ function ensureMap(): L.Map {
   return map;
 }
 
-function renderOnMap(feature: PolygonFeature): void {
+function renderOnMap(parsed: ParsedGeoInput): void {
   const mapInstance = ensureMap();
 
-  if (polygonLayer) {
-    polygonLayer.remove();
-    polygonLayer = null;
+  if (geometryLayer) {
+    geometryLayer.remove();
+    geometryLayer = null;
   }
 
-  polygonLayer = L.geoJSON(feature as any, {
+  geometryLayer = L.geoJSON(parsed.collection as any, {
     style: {
       color: '#1c1b1b',
       fillColor: '#c8c6c5',
       fillOpacity: 0.35,
       weight: 2
-    }
+    },
+    pointToLayer: (_feature, latlng) =>
+      L.circleMarker(latlng, {
+        radius: 6,
+        color: '#1c1b1b',
+        fillColor: '#c8c6c5',
+        fillOpacity: 0.8,
+        weight: 2
+      })
   }).addTo(mapInstance);
 
-  const bounds = polygonLayer.getBounds();
+  const bounds = geometryLayer.getBounds();
   if (bounds.isValid()) {
     mapInstance.fitBounds(bounds.pad(0.15));
   }
 }
 
 function clearMapLayer(): void {
-  if (polygonLayer) {
-    polygonLayer.remove();
-    polygonLayer = null;
+  if (geometryLayer) {
+    geometryLayer.remove();
+    geometryLayer = null;
   }
 }
 
@@ -203,7 +237,7 @@ function renderIssues(issueList: HTMLDivElement, issues: ValidationIssue[]): voi
       <span class="material-symbols-outlined text-secondary">info</span>
       <div>
         <p class="font-body-sm text-on-surface font-semibold">No issues detected</p>
-        <p class="text-xs text-secondary">Run check on a polygon to see detailed status.</p>
+        <p class="text-xs text-secondary">Run check on a geometry to see detailed status.</p>
       </div>
     `;
     issueList.appendChild(empty);
@@ -222,12 +256,18 @@ function renderIssues(issueList: HTMLDivElement, issues: ValidationIssue[]): voi
     const icon = issue.status === 'error' ? 'report' : issue.status === 'warning' ? 'warning' : 'check_circle';
     const iconColor = issue.status === 'error' ? 'text-error' : 'text-secondary';
 
+    const featurePrefix = issue.featureIndex !== undefined ? `Feature ${issue.featureIndex + 1} — ` : '';
+    const eudrBadge =
+      issue.eudrErrorCode !== undefined
+        ? `<span class="text-[10px] font-mono-label px-1.5 py-0.5 rounded bg-surface-container-high text-secondary border border-outline-variant">EUDR #${issue.eudrErrorCode}</span>`
+        : '';
+
     card.className = `flex items-start gap-sm p-3 rounded-lg ${cardTone}`;
     card.innerHTML = `
       <span class="material-symbols-outlined ${iconColor}">${icon}</span>
       <div>
-        <p class="font-body-sm text-on-surface font-semibold">${formatIssueTitle(issue.type)}</p>
-        <p class="text-xs text-secondary">${issue.message}</p>
+        <p class="font-body-sm text-on-surface font-semibold">${formatIssueTitle(issue.type)} ${eudrBadge}</p>
+        <p class="text-xs text-secondary">${featurePrefix}${issue.message}</p>
       </div>
     `;
     issueList.appendChild(card);
